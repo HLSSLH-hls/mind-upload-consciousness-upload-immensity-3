@@ -8,8 +8,122 @@ import pyautogui
 import 公共状态
 
 
-# 行为类
+pyautogui.FAILSAFE = True
+pyautogui.PAUSE = 0.1
+
+
+_KEY_ACTION_NAMES = {
+    '!': 'Exclamation', '"': 'DoubleQuote', '#': 'Hash', '$': 'Dollar',
+    '%': 'Percent', '&': 'Ampersand', "'": 'Quote', '(': 'LeftParen',
+    ')': 'RightParen', '*': 'Asterisk', '+': 'Plus', ',': 'Comma',
+    '-': 'Minus', '.': 'Period', '/': 'Slash', ':': 'Colon',
+    ';': 'Semicolon', '<': 'LessThan', '=': 'Equals', '>': 'GreaterThan',
+    '?': 'Question', '@': 'At', '[': 'LeftBracket', '\\': 'Backslash',
+    ']': 'RightBracket', '^': 'Caret', '_': 'Underscore', '`': 'Backtick',
+    '{': 'LeftBrace', '|': 'Pipe', '}': 'RightBrace', '~': 'Tilde',
+    'altleft': 'AltLeft', 'altright': 'AltRight',
+    'backspace': 'Backspace', 'browserback': 'BrowserBack',
+    'browserfavorites': 'BrowserFavorites', 'browserforward': 'BrowserForward',
+    'browserhome': 'BrowserHome', 'browserrefresh': 'BrowserRefresh',
+    'browsersearch': 'BrowserSearch', 'browserstop': 'BrowserStop',
+    'capslock': 'CapsLock', 'ctrlleft': 'CtrlLeft', 'ctrlright': 'CtrlRight',
+    'launchapp1': 'LaunchApp1', 'launchapp2': 'LaunchApp2',
+    'launchmail': 'LaunchMail', 'launchmediaselect': 'LaunchMediaSelect',
+    'modechange': 'ModeChange', 'nexttrack': 'NextTrack',
+    'nonconvert': 'NonConvert', 'numlock': 'NumLock',
+    'pagedown': 'PageDown', 'pageup': 'PageUp', 'playpause': 'PlayPause',
+    'prevtrack': 'PrevTrack', 'printscreen': 'PrintScreen',
+    'scrolllock': 'ScrollLock', 'shiftleft': 'ShiftLeft',
+    'shiftright': 'ShiftRight', 'volumedown': 'VolumeDown',
+    'volumemute': 'VolumeMute', 'volumeup': 'VolumeUp',
+    'winleft': 'WinLeft', 'winright': 'WinRight',
+}
+
+# 同一物理键的重复别名，以及其他平台专用键
+_KEY_ALIASES = {
+    '\t', '\n', '\r', ' ', 'del', 'escape', 'pgdn', 'pgup', 'prntscrn',
+    'prtsc', 'prtscr', 'return', 'command', 'option', 'optionleft',
+    'optionright',
+}
+
+
+def _key_action_name(key):
+    if key in _KEY_ACTION_NAMES:
+        return _KEY_ACTION_NAMES[key]
+    if len(key) == 1 and key.isalpha():
+        return key.upper()
+    if key.startswith('f') and key[1:].isdigit():
+        return key.upper()
+    return key.capitalize()
+
+
+# Shift字符与基础物理键的对应关系（美式键盘）
+_SHIFTED_CHARACTERS = {
+    '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
+    '^': '6', '&': '7', '*': '8', '(': '9', ')': '0',
+    '_': '-', '+': '=', '{': '[', '}': ']', '|': '\\',
+    ':': ';', '"': "'", '<': ',', '>': '.', '?': '/', '~': '`',
+}
+
+
+# 原子按键只对应真实物理键；!、@等Shift字符不是独立物理键
+COMPUTER_ACTIONS = {}
+for _key in pyautogui.KEYBOARD_KEYS:
+    if _key in _KEY_ALIASES or _key in _SHIFTED_CHARACTERS:
+        continue
+    _name = _key_action_name(_key)
+    COMPUTER_ACTIONS[f'press{_name}'] = ('press', _key)
+    COMPUTER_ACTIONS[f'keyDown{_name}'] = ('keyDown', _key)
+    COMPUTER_ACTIONS[f'keyUp{_name}'] = ('keyUp', _key)
+
+# 必要的Shift字符快捷行为；也可依次激活keyDownShift、press基础键、keyUpShift
+for _char, _base_key in _SHIFTED_CHARACTERS.items():
+    _name = _key_action_name(_char)
+    COMPUTER_ACTIONS[f'type{_name}'] = ('hotkey', 'shift', _base_key)
+
+for _letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+    COMPUTER_ACTIONS[f'typeUpper{_letter}'] = ('hotkey', 'shift', _letter.lower())
+
+
+# 常用编辑组合键快捷激活；也可依次激活相应物理键
+COMPUTER_ACTIONS.update({
+    'selectall': ('hotkey', 'ctrl', 'a'),
+    'copy': ('hotkey', 'ctrl', 'c'),
+    'cut': ('hotkey', 'ctrl', 'x'),
+    'paste': ('hotkey', 'ctrl', 'v'),
+    'undo': ('hotkey', 'ctrl', 'z'),
+    'redo': ('hotkey', 'ctrl', 'y'),
+    'save': ('hotkey', 'ctrl', 's'),
+})
+
+
+# 鼠标行为：每次激活按指定像素尺度相对移动；双击在一次激活内完成
+_MOUSE_MOVE_DISTANCES = (1, 10, 100)
+for _distance in _MOUSE_MOVE_DISTANCES:
+    COMPUTER_ACTIONS.update({
+        f'mouseMoveUp{_distance}': ('moveRel', 0, -_distance),
+        f'mouseMoveDown{_distance}': ('moveRel', 0, _distance),
+        f'mouseMoveLeft{_distance}': ('moveRel', -_distance, 0),
+        f'mouseMoveRight{_distance}': ('moveRel', _distance, 0),
+    })
+for _button, _name in (('left', 'Left'), ('right', 'Right'), ('middle', 'Middle')):
+    COMPUTER_ACTIONS[f'click{_name}'] = ('click', None, None, 1, 0.0, _button)
+    COMPUTER_ACTIONS[f'doubleClick{_name}'] = ('click', None, None, 2, 0.0, _button)
+    COMPUTER_ACTIONS[f'mouseDown{_name}'] = ('mouseDown', None, None, _button)
+    COMPUTER_ACTIONS[f'mouseUp{_name}'] = ('mouseUp', None, None, _button)
+
+# 滚轮行为：1、10、100分别表示滚动1、10、100格，Windows每格delta为120
+_WHEEL_UNIT = 120
+_SCROLL_SCALES = (1, 10, 100)
+for _scale in _SCROLL_SCALES:
+    COMPUTER_ACTIONS[f'scrollup{_scale}'] = ('scroll', _WHEEL_UNIT * _scale)
+    COMPUTER_ACTIONS[f'scrolldown{_scale}'] = ('scroll', -_WHEEL_UNIT * _scale)
+
+
+
 class ACT:
+    computer_actions=COMPUTER_ACTIONS
+
     def __init__(self,senlist,hapsum,sadsum,vsum,actlist):
         self.senlist=senlist
         self.hapsum=hapsum
@@ -18,6 +132,13 @@ class ACT:
         self.actlist=actlist
 
 
+    # 电脑操作行为
+    def execute_computer(self,action):#执行一个电脑操作act
+        method_name,*args=self.computer_actions[action]
+        return getattr(pyautogui,method_name)(*args)
+
+
+    # 其他行为
     def report_qualia(self):#报告意识体验
         print("意识体验内容：")
         print("当前知觉概念：",self.senlist)
@@ -27,19 +148,6 @@ class ACT:
         print("当前行为概念：",self.actlist)
     def increase_art_vigilance(self):#提高ART的警戒值
         公共状态.art_model.vigilance=0.9
-    def pressA(self):#按键盘中的A键
-        pyautogui.press('a')
-    def pressD(self):#按键盘中的D键
-        pyautogui.press('d')
-    def pressW(self):#按键盘中的W键
-        pyautogui.press('w')
-    def pressS(self):#按键盘中的S键
-        pyautogui.press('s')
-
-    def scrollup(self):#鼠标滚轮向上滚动
-        pyautogui.scroll(100)
-    def scrolldown(self):#鼠标滚轮向下滚动
-        pyautogui.scroll(-100)
 
     def introspect(self):#内省
         #内省内容包括senlist、hapsum、sadsum和vsum（不包括actlist，因为 函数：扩展知觉概念列表senlist 会将其加入下一回合的知觉概念列表）
@@ -323,24 +431,34 @@ def act_detail(want_learn_list):
 
 #输出行为概念并执行
 def output_act(actlist):
+    actor=ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist)
+    
+    for act in actlist:
+        if act in actor.computer_actions:
+            actor.execute_computer(act)
+            # pressX：点击物理键X
+            # eg：pressA：点击物理键A
+            # keyDownX：按下物理键X
+            # eg：keyDownShift：按下物理键Shift
+            # keyUpX：松开物理键X
+            # eg：keyUpShift：松开物理键Shift
+            # typeUpperX：快捷执行Shift+X
+            # eg：typeUpperA：快捷执行Shift+A，其他大写字母同理；typeExclamation：快捷执行Shift+1输入!，其他Shift字符也按对应基础键输入
+            # selectall/copy/cut/paste/undo/redo/save：常用编辑组合键的快捷激活
+            # mouseMove方向N：鼠标指针向对应方向相对移动N像素，N可取1、10、100
+            # eg：mouseMoveUp10：向上移动10像素；mouseMoveRight100：向右移动100像素
+            # clickLeft/clickRight/clickMiddle：单击鼠标左/右/中键
+            # doubleClickX：在一次激活内双击对应鼠标键
+            # mouseDownX/mouseUpX：按下/松开对应鼠标键
+            # 拖动可依次激活mouseDownX、mouseMove方向N、mouseUpX
+            # scrollupN/scrolldownN：向上/下滚动N格，N可取1、10、100
+
     if "报告意识体验" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).report_qualia()
+        actor.report_qualia()
     if "更新SOM" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).update_som()
-    if "pressA" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).pressA()
-    if "pressD" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).pressD()
-    if "pressW" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).pressW()
-    if "pressS" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).pressS()
-    if "scrollup" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).scrollup()
-    if "scrolldown" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).scrolldown()
+        actor.update_som()
     if "内省" in actlist:
-        ACT(公共状态.senlist,公共状态.hapsum,公共状态.sadsum,公共状态.vsum,actlist).introspect()
+        actor.introspect()
     if "在下一回合学习生词" in actlist:
         公共状态.learn_new_word=True
     if "生成句子" in actlist:

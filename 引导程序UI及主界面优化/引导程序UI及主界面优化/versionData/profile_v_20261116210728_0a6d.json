@@ -1,0 +1,147 @@
+{
+  "versionTag": "v_20261116210728_0a6d",
+  "savedAt": 1794834448.308634,
+  "raw": {
+    "schemaVersion": "1.0.0",
+    "versionTag": "v_20261116210728_0a6d",
+    "entry": "form",
+    "fields": [
+      {
+        "field": "behavior_space",
+        "dimension": "behavior",
+        "label": "行为",
+        "status": "filled",
+        "divergent": {
+          "rawNarrative": "写代码",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": [
+            "写代码"
+          ]
+        }
+      },
+      {
+        "field": "happiness_source",
+        "dimension": "happy",
+        "label": "喜悦情境",
+        "status": "skipped",
+        "divergent": {
+          "rawNarrative": "",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": null
+        }
+      },
+      {
+        "field": "sadness_source",
+        "dimension": "sad",
+        "label": "悲伤情境",
+        "status": "skipped",
+        "divergent": {
+          "rawNarrative": "",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": null
+        }
+      },
+      {
+        "field": "behavior_habit",
+        "dimension": "behavior_habit",
+        "label": "情境 → 行为",
+        "status": "skipped",
+        "divergent": {
+          "rawNarrative": "",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": null
+        }
+      },
+      {
+        "field": "memory_fragment",
+        "dimension": "memory",
+        "label": "记忆",
+        "status": "skipped",
+        "divergent": {
+          "rawNarrative": "",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": null
+        }
+      },
+      {
+        "field": "dictionary",
+        "dimension": "dictionary",
+        "label": "词",
+        "status": "skipped",
+        "divergent": {
+          "rawNarrative": "",
+          "candidateSignals": []
+        },
+        "convergent": {
+          "attempts": [],
+          "finalValue": null
+        }
+      }
+    ],
+    "transcript": []
+  },
+  "derived": {
+    "schemaVersion": "1.0.0",
+    "sourceRawVersion": "1.0.0",
+    "versionTag": "v_20261116210728_0a6d",
+    "behaviorSpace": [
+      {
+        "action": "写代码"
+      }
+    ],
+    "happinessHabits": [],
+    "sadnessHabits": [],
+    "behaviorHabits": [],
+    "autobiographicalMemory": [],
+    "dictionary": [],
+    "stateTransition": [],
+    "wordTransition": [],
+    "blankFields": [
+      {
+        "field": "happiness_source",
+        "label": "喜悦情境",
+        "reason": "未填写",
+        "rawAvailable": false
+      },
+      {
+        "field": "sadness_source",
+        "label": "悲伤情境",
+        "reason": "未填写",
+        "rawAvailable": false
+      },
+      {
+        "field": "behavior_habit",
+        "label": "情境 → 行为",
+        "reason": "未填写",
+        "rawAvailable": false
+      },
+      {
+        "field": "memory_fragment",
+        "label": "记忆",
+        "reason": "未填写",
+        "rawAvailable": false
+      },
+      {
+        "field": "dictionary",
+        "label": "词",
+        "reason": "未填写",
+        "rawAvailable": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>苍穹3号 · 认识你</title>
+<style>
+:root{
+  --bg0:#050712; --bg1:#070b1a;
+  --ink:#e8edf5; --muted:#8ea0bf; --dim:#5d708f;
+  --cyan:#5ad7ff; --blue:#4a9eff; --violet:#7c3aed; --mint:#4fe3c1;
+  --glass:rgba(12,18,34,.55);
+  --card:rgba(0,0,0,.24);
+  --line-struct:rgba(255,255,255,.09);
+  --line-deco:rgba(255,255,255,.045);
+  --fs-xs:12px; --fs-sm:13px; --fs-md:14px; --fs-lg:16px; --fs-xl:20px; --fs-2xl:28px;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-6:24px; --sp-8:32px; --sp-12:48px;
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 700px at 32% 18%,rgba(90,215,255,.10),transparent 62%),
+    radial-gradient(800px 600px at 78% 70%,rgba(124,58,237,.07),transparent 64%),
+    linear-gradient(180deg,var(--bg0) 0%,var(--bg1) 60%,#02030a 100%);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;opacity:.16;
+}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:var(--sp-8) var(--sp-6) var(--sp-12)}
+
+/* ---------- 品牌 ---------- */
+.brand{display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-12)}
+.brand .mark{font-size:var(--fs-xl);color:var(--cyan);filter:drop-shadow(0 0 8px rgba(90,215,255,.5))}
+.brand .name{font-size:var(--fs-xl);font-weight:700;letter-spacing:-.5px}
+.brand .name b{color:var(--cyan)}
+.brand .tag{
+  font-size:var(--fs-xs);color:rgba(167,210,255,.9);
+  background:rgba(90,215,255,.08);border:1px solid rgba(90,215,255,.16);
+  padding:2px 10px;border-radius:var(--r-pill);margin-left:var(--sp-2);
+}
+
+/* ---------- 标题区 ---------- */
+.hero{margin-bottom:var(--sp-12)}
+.hero h1{font-size:var(--fs-2xl);font-weight:700;letter-spacing:-.6px;margin-bottom:var(--sp-3)}
+.hero h1 span{color:var(--cyan)}
+.hero p{font-size:var(--fs-md);color:var(--muted);line-height:1.8;max-width:640px}
+
+.brand-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--sp-4);
+  margin-bottom:var(--sp-12);
+}
+.brand-row .brand{margin-bottom:0}
+.skip-btn{
+  background:transparent;
+  border:1px solid var(--line-deco);
+  color:var(--muted);
+  font-size:var(--fs-sm);
+  font-family:inherit;
+  padding:5px 14px;
+  border-radius:var(--r-pill);
+  cursor:pointer;
+  letter-spacing:.03em;
+  transition:all .18s var(--ease-out);
+  flex-shrink:0;
+}
+.skip-btn:hover{
+  color:var(--ink);
+  border-color:rgba(90,215,255,.3);
+  background:rgba(90,215,255,.04);
+}
+
+/* ---------- 分组标题 ---------- */
+.group-label{
+  display:flex;align-items:center;gap:var(--sp-3);
+  font-size:var(--fs-xs);color:var(--dim);letter-spacing:1px;
+  text-transform:uppercase;font-weight:600;margin:var(--sp-8) 0 var(--sp-3);
+}
+.group-label::after{content:"";flex:1;height:1px;background:var(--line-deco)}
+
+/* ---------- 入口卡片 ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3)}
+.entry{
+  position:relative;display:block;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line-deco);
+  border-radius:var(--r-md);padding:var(--sp-4) var(--sp-4) var(--sp-3);
+  color:var(--ink);cursor:pointer;font-family:inherit;
+  transition:border-color .18s var(--ease-out),background .18s var(--ease-out),transform .18s var(--ease-out);
+}
+.entry:hover{border-color:rgba(90,215,255,.28);background:rgba(90,215,255,.04);transform:translateY(-1px)}
+.entry .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-2)}
+.entry .icon{font-size:var(--fs-lg);opacity:.9}
+.entry .badge{font-size:var(--fs-xs);color:var(--dim);border:1px solid var(--line-deco);padding:1px 8px;border-radius:var(--r-pill)}
+.entry h3{font-size:var(--fs-lg);font-weight:600;margin-bottom:var(--sp-1)}
+.entry p{font-size:var(--fs-sm);color:var(--muted);line-height:1.7}
+.entry .meta{display:flex;align-items:center;gap:var(--sp-3);margin-top:var(--sp-3);font-size:var(--fs-xs);color:var(--dim)}
+
+/* 深度建模大卡片 */
+.entry.deep{
+  grid-column:1 / -1;margin-top:var(--sp-3);
+  background:linear-gradient(180deg,rgba(90,215,255,.06),rgba(0,0,0,.26));
+  border:1px solid rgba(90,215,255,.22);
+  padding:var(--sp-6);
+}
+.entry.deep:hover{border-color:rgba(90,215,255,.45);background:linear-gradient(180deg,rgba(90,215,255,.09),rgba(0,0,0,.28))}
+.entry.deep h3{font-size:var(--fs-xl)}
+.entry.deep .lead{font-size:var(--fs-md);color:rgba(232,237,245,.82);line-height:1.8;max-width:640px;margin-top:var(--sp-2)}
+.entry.deep .sources{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-4)}
+.chip{
+  font-size:var(--fs-xs);color:rgba(200,225,255,.85);
+  background:rgba(0,0,0,.28);border:1px solid var(--line-deco);
+  padding:3px 10px;border-radius:var(--r-pill);
+}
+.entry.deep .cta{
+  display:inline-flex;align-items:center;gap:6px;margin-top:var(--sp-4);
+  font-size:var(--fs-sm);font-weight:600;color:var(--cyan);
+}
+
+/* 保真度点阵 */
+.fidelity{display:inline-flex;align-items:center;gap:3px;vertical-align:middle}
+.fidelity i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.14);display:inline-block}
+.fidelity i.on{background:var(--cyan);box-shadow:0 0 6px rgba(90,215,255,.5)}
+.fidelity.violet i.on{background:var(--violet);box-shadow:0 0 6px rgba(124,58,237,.5)}
+
+/* ---------- 页脚 ---------- */
+.foot{margin-top:var(--sp-12);font-size:var(--fs-xs);color:var(--dim);line-height:1.8}
+.foot .poem{font-style:italic;color:rgba(255,255,255,.16);margin-bottom:var(--sp-2)}
+
+/* ---------- 第二页：数据接入说明 ---------- */
+[hidden]{display:none !important}
+.page-head{display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-8)}
+.back{
+  display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:var(--muted);
+  background:none;border:1px solid var(--line-deco);border-radius:var(--r-pill);
+  padding:4px 14px;cursor:pointer;font-family:inherit;
+  transition:border-color .18s var(--ease-out),color .18s var(--ease-out);
+}
+.back:hover{border-color:rgba(90,215,255,.3);color:var(--ink)}
+
+.section{margin-bottom:var(--sp-8)}
+.section h2{font-size:var(--fs-lg);font-weight:600;margin-bottom:var(--sp-3);display:flex;align-items:center;gap:var(--sp-2)}
+.section h2 .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(90,215,255,.6)}
+.section .desc{font-size:var(--fs-sm);color:var(--muted);line-height:1.8;margin-bottom:var(--sp-4)}
+
+/* 双轴保真度 */
+.axes{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3)}
+.axis{background:var(--card);border:1px solid var(--line-deco);border-radius:var(--r-md);padding:var(--sp-4)}
+.axis .axis-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-2)}
+.axis .axis-head strong{font-size:var(--fs-md)}
+.axis .axis-head .lv{font-size:var(--fs-xs);color:var(--dim)}
+.axis p{font-size:var(--fs-xs);color:var(--muted);line-height:1.7}
+.axis.brain{border-color:rgba(124,58,237,.22)}
+.axis.brain h2 .dot,.axis.brain .dot{background:var(--violet)}
+
+/* 数据来源表 */
+.sources-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.sources-table th{
+  text-align:left;font-size:var(--fs-xs);color:var(--dim);font-weight:600;
+  padding:var(--sp-2) var(--sp-3);border-bottom:1px solid var(--line-struct);
+}
+.sources-table td{padding:var(--sp-3);border-bottom:1px solid var(--line-deco);vertical-align:top}
+.sources-table td.name{color:var(--ink)}
+.sources-table td.role{color:var(--muted);font-size:var(--fs-xs)}
+.sources-table td.st{white-space:nowrap}
+.status{font-size:var(--fs-xs);padding:1px 8px;border-radius:var(--r-pill);border:1px solid var(--line-deco)}
+.status.beta{color:var(--mint);border-color:rgba(79,227,193,.25);background:rgba(79,227,193,.06)}
+.status.research{color:rgba(190,170,255,.95);border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.08)}
+
+/* 加工链路 */
+.pipeline{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.step{
+  flex:1;min-width:120px;position:relative;
+  background:var(--card);border:1px solid var(--line-deco);border-radius:var(--r-sm);
+  padding:var(--sp-3);margin-right:var(--sp-2);margin-bottom:var(--sp-2);
+}
+.step:last-child{margin-right:0}
+.step .num{font-size:var(--fs-xs);color:var(--dim);margin-bottom:var(--sp-1)}
+.step strong{font-size:var(--fs-sm);display:block;margin-bottom:var(--sp-1)}
+.step span{font-size:var(--fs-xs);color:var(--muted);line-height:1.6;display:block}
+
+/* 伦理卡片 */
+.ethic{
+  background:rgba(255,255,255,.025);border-left:2px solid rgba(90,215,255,.4);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--sp-3) var(--sp-4);
+  font-size:var(--fs-sm);color:var(--muted);line-height:1.8;
+}
+.ethic b{color:var(--ink)}
+
+/* 申请表单 */
+.apply{
+  background:linear-gradient(180deg,rgba(90,215,255,.05),rgba(0,0,0,.26));
+  border:1px solid rgba(90,215,255,.2);border-radius:var(--r-lg);
+  padding:var(--sp-6);
+}
+.apply h2{font-size:var(--fs-xl);font-weight:700;margin-bottom:var(--sp-2)}
+.apply .sub{font-size:var(--fs-sm);color:var(--muted);line-height:1.7;margin-bottom:var(--sp-4)}
+.apply .row{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-3);flex-wrap:wrap}
+.apply input[type=email]{
+  flex:1;min-width:220px;background:rgba(0,0,0,.34);border:1px solid var(--line-deco);
+  border-radius:var(--r-pill);padding:8px 16px;color:var(--ink);font-size:var(--fs-sm);
+  font-family:inherit;outline:none;
+  transition:border-color .18s var(--ease-out),box-shadow .18s var(--ease-out);
+}
+.apply input[type=email]::placeholder{color:var(--dim)}
+.apply input[type=email]:focus{border-color:rgba(90,215,255,.4);box-shadow:0 0 0 3px rgba(90,215,255,.08)}
+.apply .send{
+  background:linear-gradient(135deg,rgba(26,106,255,.95),rgba(90,215,255,.9));
+  border:none;border-radius:var(--r-pill);padding:8px 22px;
+  color:#fff;font-size:var(--fs-sm);font-weight:600;cursor:pointer;font-family:inherit;
+  transition:box-shadow .18s var(--ease-out),transform .18s var(--ease-out);
+}
+.apply .send:hover{box-shadow:0 10px 30px rgba(74,158,255,.28);transform:translateY(-1px)}
+.apply .send:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.apply .opts{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-4)}
+.opt{
+  font-size:var(--fs-xs);color:var(--muted);background:rgba(0,0,0,.24);
+  border:1px solid var(--line-deco);border-radius:var(--r-pill);
+  padding:4px 12px;cursor:pointer;user-select:none;
+  transition:all .18s var(--ease-out);
+}
+.opt.on{color:var(--cyan);border-color:rgba(90,215,255,.4);background:rgba(90,215,255,.08)}
+.apply .fine{font-size:var(--fs-xs);color:var(--dim);line-height:1.7;margin-top:var(--sp-3)}
+.apply .done{font-size:var(--fs-sm);color:var(--mint);margin-top:var(--sp-3)}
+
+/* toast */
+.toast{
+  position:fixed;right:24px;bottom:24px;z-index:50;
+  background:rgba(12,18,34,.95);border:1px solid rgba(90,215,255,.3);
+  border-radius:var(--r-md);padding:10px 18px;font-size:var(--fs-sm);
+  color:var(--ink);box-shadow:0 16px 40px rgba(0,0,0,.5);
+  opacity:0;transform:translateY(8px);pointer-events:none;
+  transition:opacity .2s var(--ease-out),transform .2s var(--ease-out);
+}
+.toast.on{opacity:1;transform:translateY(0)}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .axes{grid-template-columns:1fr}
+  .hero h1{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ================= 首页 ================= -->
+  <div id="pageHome">
+    <div class="brand-row">
+      <div class="brand">
+        <span class="mark">◈</span>
+        <span class="name">苍穹<b>3</b>号</span>
+        <span class="tag">初次见面</span>
+      </div>
+      <button class="skip-btn" id="btnSkipToMain" type="button">直接进入主界面 →</button>
+    </div>
+
+    <div class="hero">
+      <h1>让苍穹3号<span>认识你</span></h1>
+      <p>它不是一份问卷，也不是一个聊天机器人。通过你的数据，他将以你的心智模式运行</p>
+    </div>
+
+    <div class="group-label">快速开始</div>
+    <div class="grid">
+      <button class="entry" id="btnInterview" type="button">
+        <div class="top">
+          <span class="icon">💬</span>
+          
+        </div>
+        <h3>和苍穹3号聊聊</h3>
+        <p>大约 6 个话题，它会引导你说出自己的情绪模式、行为习惯和记忆片段。</p>
+        <div class="meta">
+          <span>约 8 分钟</span>
+          <span>保真度 <span class="fidelity"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></span>
+        </div>
+      </button>
+
+      <button class="entry" id="btnForm" type="button">
+        <div class="top">
+          <span class="icon">📋</span>
+          
+        </div>
+        <h3>直接填表</h3>
+        <p>我已经想清楚要表达什么。用结构化表单快速建立基础画像。</p>
+        <div class="meta">
+          <span>约 5 分钟</span>
+          <span>保真度 <span class="fidelity"><i class="on"></i><i></i><i></i><i></i><i></i></span></span>
+        </div>
+      </button>
+    </div>
+
+    <div class="group-label">深度建模</div>
+    <button class="entry deep" id="btnData" type="button">
+      <div class="top">
+        <span class="icon">📁</span>
+        <span class="badge">未来开放</span>
+      </div>
+      <h3>导入真实数据 / 接入设备</h3>
+      <p class="lead">
+        你已有的数据，不必重填。日记、聊天记录、心理测评、可穿戴设备，甚至脑电——
+        数据越丰富、越真实，孪生就越接近你。访谈和表单是快速开始，这条路才是深度建模。
+      </p>
+      <div class="sources">
+        <span class="chip">结构化档案</span>
+        <span class="chip">日记 · 聊天记录</span>
+        <span class="chip">心理测评量表</span>
+        <span class="chip">可穿戴设备</span>
+        <span class="chip">EEG · 脑电设备</span>
+      </div>
+      <span class="cta">了解这条路怎么走 →</span>
+    </button>
+
+    <div class="foot">
+      <p class="poem">当意识的微光现于苍穹之上，生命的火花穿过时光的间隙。</p>
+      <p>所有数据经由来源追溯与一致性校验后进入画像；神经数据仅在内测环境使用，可随时撤回。</p>
+    </div>
+  </div>
+
+  <!-- ================= 第二页：数据接入说明 ================= -->
+  <div id="pageData" hidden>
+    <div class="page-head">
+      <button class="back" id="btnBack" type="button">← 返回</button>
+      <span style="font-size:var(--fs-xs);color:var(--dim)">深度建模 · 邀请制内测</span>
+    </div>
+
+    <div class="hero" style="margin-bottom:var(--sp-8)">
+      <h1>你已有的数据，<span>是最高密度的建模材料</span></h1>
+      <p>访谈和表单采集的是“你愿意说、能说出来的自己”；文件和设备采集的是“你已经留下、但不一定记得的自己”。后者数据密度更高、更接近真实行为——这是心理数字孪生区别于问卷工具的地方。</p>
+    </div>
+
+    <!-- 双轴保真度 -->
+    <div class="section">
+      <h2><span class="dot"></span>两个孪生，两条保真度轴</h2>
+      <div class="axes">
+        <div class="axis">
+          <div class="axis-head">
+            <strong>心智孪生</strong>
+            <span class="lv">功能层</span>
+          </div>
+          <p>来自语言、行为、自述与记忆。描述你的偏好、情绪模式、决策倾向和表达习惯。数据越真实，画像越贴近你。</p>
+          <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--dim)">
+            当前路径保真度 <span class="fidelity"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          </div>
+        </div>
+        <div class="axis brain">
+          <div class="axis-head">
+            <strong>脑孪生</strong>
+            <span class="lv">机制层</span>
+          </div>
+          <p>来自脑电与生理信号。描述你的神经状态、注意力、认知负荷与状态转换。空间与时间分辨率决定它的上限。</p>
+          <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--dim)">
+            当前路径保真度 <span class="fidelity violet"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+          </div>
+        </div>
+      </div>
+      <p class="desc" style="margin-top:var(--sp-3);margin-bottom:0">
+        两条轴不是一条线的两端。心智孪生再丰富，也读不出神经状态；脑电信号再干净，也建不出记忆和人格。它们需要各自的数据源，最终在心智-脑耦合层对齐。
+      </p>
+    </div>
+
+    <!-- 数据来源 -->
+    <div class="section">
+      <h2><span class="dot"></span>可以进来的数据</h2>
+      <table class="sources-table">
+        <thead>
+          <tr><th>数据来源</th><th>进入哪一层</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">结构化档案（JSON / CSV）</td>
+            <td class="role">心智孪生 · 基线画像</td>
+            <td class="st"><span class="status beta">内测</span></td>
+          </tr>
+          <tr>
+            <td class="name">日记 / 聊天记录 / 文本语料</td>
+            <td class="role">心智孪生 · 语言与情绪模式</td>
+            <td class="st"><span class="status beta">内测</span></td>
+          </tr>
+          <tr>
+            <td class="name">心理测评量表结果</td>
+            <td class="role">心智孪生 · 结构化自我描述</td>
+            <td class="st"><span class="status beta">内测</span></td>
+          </tr>
+          <tr>
+            <td class="name">可穿戴设备（心率 / 睡眠 / 活动）</td>
+            <td class="role">心智孪生 · 生理状态维度</td>
+            <td class="st"><span class="status beta">内测</span></td>
+          </tr>
+          <tr>
+            <td class="name">EEG / 脑电设备</td>
+            <td class="role">脑孪生 · 神经状态层</td>
+            <td class="st"><span class="status research">研究性内测</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="desc" style="margin-top:var(--sp-3);margin-bottom:0">
+        前四类用于功能层建模；脑电目前用于状态层信号（注意力、认知负荷、情绪效价粗分类），不用于内容级读取。内容级解码属于研究议程，不在当前产品承诺范围内。
+      </p>
+    </div>
+
+    <!-- 加工链路 -->
+    <div class="section">
+      <h2><span class="dot"></span>数据进来之后</h2>
+      <div class="pipeline">
+        <div class="step"><div class="num">01</div><strong>来源追溯</strong><span>每条数据记录来源与时间，可回溯到原始材料。</span></div>
+        <div class="step"><div class="num">02</div><strong>特征抽取</strong><span>语言、行为、生理信号被抽取为可建模的特征。</span></div>
+        <div class="step"><div class="num">03</div><strong>一致性校验</strong><span>与已有画像比对，冲突不自动合并，交由你确认。</span></div>
+        <div class="step"><div class="num">04</div><strong>画像更新</strong><span>新特征进入孪生，旧特征按时间与可信度加权。</span></div>
+        <div class="step"><div class="num">05</div><strong>持续演化</strong><span>设备接入是实时流，孪生随时间更新，不是一次快照。</span></div>
+      </div>
+      <p class="desc" style="margin-top:var(--sp-2);margin-bottom:0">
+        这条链路和访谈路径共用同一份数据契约。不管数据从哪个入口进来，最终都落到同一套画像结构，带版本号，可被下游直接消费。
+      </p>
+    </div>
+
+    <!-- 伦理 -->
+    <div class="section">
+      <h2><span class="dot"></span>边界与承诺</h2>
+      <div class="ethic">
+        <b>知情同意</b>：数据接入前明确告知用途与范围。<br>
+        <b>可撤回</b>：你可以在任何时候撤回已接入的数据，画像随之回退。<br>
+        <b>来源可追溯</b>：每条特征都能回溯到原始材料，不做黑箱生成。<br>
+        <b>神经数据隔离</b>：脑电等神经数据仅在内测环境使用，不进入对外服务。<br>
+        <b>不做承诺之外的事</b>：内容级读取、高保真脑模型属于研究议程，不作为产品功能对外承诺。
+      </div>
+    </div>
+
+    <!-- 申请 -->
+    <!-- <div class="apply">
+      <h2>申请内测</h2>
+      <p class="sub">这条路目前是邀请制。留下邮箱，并告诉我们你手上有哪类数据——我们会优先邀请数据更完整的人。</p>
+      <div class="opts" id="optGroup">
+        <span class="opt" data-opt="档案">结构化档案</span>
+        <span class="opt" data-opt="文本">日记 / 聊天记录</span>
+        <span class="opt" data-opt="测评">心理测评量表</span>
+        <span class="opt" data-opt="可穿戴">可穿戴设备</span>
+        <span class="opt" data-opt="脑电">EEG / 脑电设备</span>
+      </div>
+      <div class="row">
+        <input type="email" id="applyEmail" placeholder="你的邮箱" autocomplete="email">
+        <button class="send" id="btnApply" type="button">提交申请</button>
+      </div>
+      <p class="fine">提交即表示你同意我们通过该邮箱与你联系。我们不会将邮箱用于其他用途。</p>
+      <p class="done" id="applyDone" hidden>已收到。开放内测时我们会第一时间通知你。</p>
+    </div> -->
+
+    <div class="foot">
+      <p class="poem">死亡，只是记忆打了一个盹。苍穹亮起时，它会醒。</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var pageHome = document.getElementById('pageHome');
+  var pageData = document.getElementById('pageData');
+  var toastEl  = document.getElementById('toast');
+  var toastTimer = null;
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('on'); }, 2400);
+  }
+
+  function showData(){
+    pageHome.hidden = true;
+    pageData.hidden = false;
+    window.scrollTo(0,0);
+  }
+  function showHome(){
+    pageData.hidden = true;
+    pageHome.hidden = false;
+    window.scrollTo(0,0);
+  }
+
+  document.getElementById('btnData').addEventListener('click', showData);
+  document.getElementById('btnBack').addEventListener('click', showHome);
+  document.getElementById('btnInterview').addEventListener('click', function(){
+    localStorage.setItem('cq3_entry', 'interview');
+    location.href = '/onboarding/interview.html';
+  });
+
+  document.getElementById('btnForm').addEventListener('click', function(){
+    localStorage.setItem('cq3_entry', 'form');
+    location.href = '/onboarding/edit.html?mode=create';
+  });
+
+  document.getElementById('btnSkipToMain').addEventListener('click', function(){
+    location.href = '/';
+  });
+
+  // 数据来源多选
+  var selected = {};
+  document.getElementById('optGroup').addEventListener('click', function(e){
+    var el = e.target.closest('.opt');
+    if(!el) return;
+    var key = el.getAttribute('data-opt');
+    if(selected[key]){ delete selected[key]; el.classList.remove('on'); }
+    else { selected[key] = true; el.classList.add('on'); }
+  });
+
+  
+
+  // 申请提交（演示版：只做前端校验和反馈）
+  var btnApply = document.getElementById('btnApply');
+  var emailInput = document.getElementById('applyEmail');
+  var doneEl = document.getElementById('applyDone');
+
+  btnApply.addEventListener('click', function(){
+    var email = (emailInput.value || '').trim();
+    if(!email){
+      toast('请先填写邮箱');
+      emailInput.focus();
+      return;
+    }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      toast('邮箱格式看起来不对，请检查');
+      emailInput.focus();
+      return;
+    }
+    var picked = Object.keys(selected);
+    if(picked.length === 0){
+      toast('请至少选择一类你手上的数据');
+      return;
+    }
+    // 演示版：这里将来接 POST /api/apply
+    btnApply.disabled = true;
+    btnApply.textContent = '已提交';
+    doneEl.hidden = false;
+    toast('申请已记录，我们会尽快联系你');
+  });
+})();
+</script>
+</body>
+</html>

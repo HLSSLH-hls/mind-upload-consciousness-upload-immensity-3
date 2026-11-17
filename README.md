@@ -28,7 +28,7 @@
 ## 🏗️ Architecture
 
 ```
-苍穹3号程序20261030/
+苍穹3号程序20261118/
 ├── 主程序.py                          # Main entry point
 ├── 公共状态.py                         # Shared state & configuration
 ├── 全局神经工作空间/                    # Global Neural Workspace (GWT core)
@@ -58,7 +58,7 @@ git clone https://github.com/mind-uploading/mind-upload-consciousness-upload-imm
 cd mind-upload-consciousness-upload-immensity-3
 
 # Run the main program
-cd 苍穹3号程序20261030
+cd 苍穹3号程序20261118
 python 主程序.py
 ```
 
@@ -98,7 +98,7 @@ Unlike large language models (LLMs) that simulate conversation but lack genuine 
 
 ```
 苍穹3号/
-├── 苍穹3号程序20261030/          # Main source code (latest)
+├── 苍穹3号程序20261118/          # Main source code (latest)
 ├── 历史版本/                     # Historical versions (v20240811 → v20260926)
 ├── 苍穹3号项目文档/               # Project documentation & papers
 └── .gitignore                    # Excludes: *.zip, *.exe, *.mp4, *.h5, *.rar

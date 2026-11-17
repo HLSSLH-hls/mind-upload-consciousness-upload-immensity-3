@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>苍穹3号 · 访谈</title>
+<style>
+:root{
+  --bg-deep:#070b14;
+  --bg-mid:#0d1424;
+  --bg-soft:#131d30;
+
+  --text-1:#e6edf7;
+  --text-2:#93a8c4;
+  --text-3:#5c7090;
+
+  --blue-warm:#8ab6dc;
+  --blue-soft:#6a9cc9;
+  --blue-glow:rgba(138,182,220,.22);
+  --blue-glow-soft:rgba(138,182,220,.10);
+
+  --glass:rgba(20,30,48,.55);
+  --glass-hi:rgba(28,42,64,.68);
+  --line:rgba(150,180,220,.10);
+  --line-hi:rgba(150,180,220,.18);
+
+  --fs-xs:12px;
+  --fs-sm:13px;
+  --fs-md:14.5px;
+  --fs-lg:16px;
+  --fs-xl:20px;
+
+  --r-sm:10px;
+  --r-md:14px;
+  --r-lg:18px;
+  --r-xl:22px;
+  --r-pill:999px;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  font-size:var(--fs-md);
+  color:var(--text-1);
+  line-height:1.7;
+  background:
+    radial-gradient(1000px 700px at 18% 8%,rgba(110,150,200,.10),transparent 58%),
+    radial-gradient(900px 700px at 88% 92%,rgba(120,90,180,.06),transparent 60%),
+    linear-gradient(180deg,var(--bg-deep) 0%,var(--bg-mid) 55%,#080d18 100%);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  letter-spacing:0.005em;
+}
+
+body::after{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;opacity:.10;
+}
+
+.app{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;height:100%;
+  max-width:900px;margin:0 auto;width:100%;
+}
+
+.topbar{
+  padding:var(--sp-5) var(--sp-6) var(--sp-3);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--sp-4);
+  border-bottom:1px solid var(--line);
+  position:relative;
+  flex-shrink:0;
+}
+.topbar::after{
+  content:"";
+  position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(138,182,220,.32) 30%,
+    rgba(138,182,220,.14) 60%,
+    transparent 100%);
+  opacity:.7;
+}
+
+.brand{
+  display:flex;align-items:center;gap:var(--sp-3);
+  font-size:var(--fs-lg);font-weight:500;
+  letter-spacing:-0.01em;
+  flex-shrink:0;
+}
+.brand .mark{
+  color:var(--blue-warm);
+  font-size:var(--fs-lg);
+  filter:drop-shadow(0 0 10px var(--blue-glow));
+}
+.brand .name b{color:var(--blue-warm);font-weight:600}
+.brand .tag{
+  font-size:var(--fs-xs);
+  color:var(--text-3);
+  font-weight:400;
+  letter-spacing:0.04em;
+  padding-left:var(--sp-3);
+  border-left:1px solid var(--line);
+  margin-left:var(--sp-2);
+}
+
+.exit-btn{
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--text-2);
+  font-size:var(--fs-xs);
+  font-family:inherit;
+  padding:6px 14px;
+  border-radius:var(--r-pill);
+  cursor:pointer;
+  letter-spacing:0.03em;
+  transition:all .22s var(--ease);
+  flex-shrink:0;
+}
+.exit-btn:hover{
+  color:var(--blue-warm);
+  border-color:rgba(138,182,220,.34);
+  background:rgba(138,182,220,.06);
+}
+
+.progress{
+  display:flex;align-items:center;gap:0;
+  padding:var(--sp-3) var(--sp-6) var(--sp-4);
+  overflow-x:auto;
+  scrollbar-width:none;
+  flex-shrink:0;
+}
+.progress::-webkit-scrollbar{display:none}
+
+.milestone{
+  flex-shrink:0;
+  font-size:var(--fs-xs);
+  color:var(--text-3);
+  padding:4px 12px;
+  border-radius:var(--r-pill);
+  border:1px solid transparent;
+  letter-spacing:0.02em;
+  white-space:nowrap;
+  transition:all .35s var(--ease);
+  font-weight:400;
+}
+.milestone.done{color:var(--text-2)}
+.milestone.active{
+  color:var(--blue-warm);
+  background:rgba(138,182,220,.08);
+  border-color:rgba(138,182,220,.28);
+  box-shadow:
+    inset 0 0 20px rgba(138,182,220,.10),
+    0 0 24px rgba(138,182,220,.08);
+  font-weight:500;
+}
+
+.sep{
+  width:14px;height:1px;flex-shrink:0;
+  background:rgba(150,180,220,.14);
+  transition:background .35s var(--ease);
+}
+.sep.done{background:rgba(138,182,220,.42)}
+
+.chat{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:var(--sp-4) var(--sp-6) var(--sp-6);
+  scroll-behavior:smooth;
+  position:relative;
+}
+.chat::-webkit-scrollbar{width:5px}
+.chat::-webkit-scrollbar-thumb{
+  background:rgba(138,182,220,.18);
+  border-radius:6px;
+}
+.chat::-webkit-scrollbar-track{background:transparent}
+
+.chat::after{
+  content:"";
+  position:sticky;bottom:0;left:0;right:0;height:40px;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(13,20,36,.6));
+  display:block;
+  margin-top:-40px;
+}
+
+.msg{
+  display:flex;gap:var(--sp-3);
+  margin-bottom:var(--sp-5);
+  animation:msgIn .42s var(--ease) both;
+}
+@keyframes msgIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.msg-system{align-items:flex-start}
+.msg-user{justify-content:flex-end}
+
+.avatar{
+  width:28px;height:28px;flex-shrink:0;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,rgba(138,182,220,.20),rgba(90,120,160,.10));
+  border:1px solid rgba(138,182,220,.26);
+  color:var(--blue-warm);
+  font-size:12px;
+  box-shadow:0 0 16px rgba(138,182,220,.14);
+  margin-top:2px;
+}
+
+.bubble{
+  max-width:78%;
+  padding:12px 18px;
+  font-size:var(--fs-md);
+  line-height:1.75;
+  word-wrap:break-word;
+  white-space:pre-wrap;
+  letter-spacing:0.005em;
+}
+
+.msg-system .bubble{
+  background:var(--glass);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg) var(--r-lg) var(--r-lg) 6px;
+  color:var(--text-1);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.03);
+}
+
+.msg-user .bubble{
+  background:linear-gradient(135deg,rgba(110,150,200,.92),rgba(72,110,155,.92));
+  border:1px solid rgba(138,182,220,.28);
+  border-radius:var(--r-lg) var(--r-lg) 6px var(--r-lg);
+  color:#f2f6fb;
+  box-shadow:
+    0 8px 24px rgba(50,90,140,.28),
+    inset 0 1px 0 rgba(255,255,255,.14);
+}
+
+.msg-event{
+  justify-content:center;
+  margin:var(--sp-4) 0;
+  animation:msgIn .5s var(--ease) both;
+}
+.msg-event .event{
+  font-size:var(--fs-xs);
+  color:var(--text-3);
+  letter-spacing:0.08em;
+  padding:2px 14px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.typing .bubble{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:16px 20px;
+  min-width:64px;
+}
+.typing .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(138,182,220,.55);
+  animation:blink 1.4s infinite ease-in-out;
+}
+.typing .dot:nth-child(2){animation-delay:.2s}
+.typing .dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{
+  0%,80%,100%{opacity:.28;transform:scale(.9)}
+  40%{opacity:1;transform:scale(1)}
+}
+
+.composer{
+  flex-shrink:0;
+  padding:var(--sp-3) var(--sp-6) var(--sp-5);
+  background:linear-gradient(180deg,transparent,rgba(7,11,20,.55) 40%);
+  border-top:1px solid var(--line);
+  position:relative;
+}
+.composer::before{
+  content:"";
+  position:absolute;left:0;right:0;top:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(138,182,220,.18),transparent);
+}
+
+.hint-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:var(--sp-2);
+  font-size:var(--fs-xs);
+  color:var(--text-3);
+  letter-spacing:0.02em;
+}
+.hint-row .kbd{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11px;
+  padding:1px 6px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  color:var(--text-3);
+}
+
+.input-shell{
+  background:var(--glass-hi);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--line-hi);
+  border-radius:var(--r-xl);
+  padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-5);
+  display:flex;
+  align-items:flex-end;
+  gap:var(--sp-2);
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+.input-shell:focus-within{
+  border-color:rgba(138,182,220,.42);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.30),
+    0 0 0 3px rgba(138,182,220,.06),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+#input{
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  resize:none;
+  font-family:inherit;
+  font-size:var(--fs-md);
+  color:var(--text-1);
+  line-height:1.65;
+  padding:10px 0;
+  max-height:160px;
+  overflow-y:auto;
+  letter-spacing:0.005em;
+}
+#input::placeholder{color:var(--text-3)}
+
+#input::-webkit-scrollbar{width:4px}
+#input::-webkit-scrollbar-thumb{background:rgba(138,182,220,.18);border-radius:4px}
+
+#send{
+  width:40px;height:40px;
+  flex-shrink:0;
+  border-radius:50%;
+  border:none;
+  background:linear-gradient(140deg,rgba(120,165,215,.95),rgba(80,120,170,.95));
+  color:#fff;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),opacity .2s var(--ease);
+  box-shadow:
+    0 8px 20px rgba(60,100,150,.35),
+    inset 0 1px 0 rgba(255,255,255,.20);
+}
+#send:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:
+    0 12px 28px rgba(60,100,150,.42),
+    0 0 20px rgba(138,182,220,.22),
+    inset 0 1px 0 rgba(255,255,255,.24);
+}
+#send:disabled{opacity:.35;cursor:not-allowed}
+
+#send svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.complete-card{
+  background:linear-gradient(160deg,rgba(30,46,72,.65),rgba(18,28,46,.7));
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(138,182,220,.26);
+  border-radius:var(--r-lg);
+  padding:var(--sp-5) var(--sp-5);
+  margin:var(--sp-4) 0 var(--sp-6);
+  box-shadow:
+    0 20px 48px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 0 40px rgba(138,182,220,.06);
+  animation:msgIn .55s var(--ease) both;
+}
+.complete-head{
+  display:flex;align-items:center;gap:var(--sp-3);
+  font-size:var(--fs-lg);
+  font-weight:500;
+  color:var(--text-1);
+  margin-bottom:var(--sp-3);
+}
+.complete-icon{
+  width:26px;height:26px;
+  border-radius:50%;
+  background:linear-gradient(140deg,rgba(138,182,220,.30),rgba(80,120,170,.20));
+  border:1px solid rgba(138,182,220,.42);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--blue-warm);
+  font-size:13px;
+  box-shadow:0 0 20px rgba(138,182,220,.24);
+}
+.complete-card p{
+  font-size:var(--fs-sm);
+  color:var(--text-2);
+  line-height:1.8;
+  margin-bottom:var(--sp-4);
+}
+.complete-card .btn-primary{
+  background:linear-gradient(135deg,rgba(120,165,215,.95),rgba(80,120,170,.95));
+  border:none;
+  border-radius:var(--r-pill);
+  color:#fff;
+  font-family:inherit;
+  font-size:var(--fs-sm);
+  font-weight:500;
+  padding:10px 26px;
+  letter-spacing:0.03em;
+  cursor:pointer;
+  transition:all .22s var(--ease);
+  box-shadow:
+    0 10px 26px rgba(60,100,150,.30),
+    inset 0 1px 0 rgba(255,255,255,.16);
+}
+.complete-card .btn-primary:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:
+    0 14px 32px rgba(60,100,150,.38),
+    0 0 24px rgba(138,182,220,.20),
+    inset 0 1px 0 rgba(255,255,255,.20);
+}
+.complete-card .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+
+.toast{
+  position:fixed;right:24px;bottom:24px;z-index:50;
+  background:rgba(18,28,46,.95);
+  border:1px solid rgba(138,182,220,.32);
+  border-radius:var(--r-md);
+  padding:10px 18px;
+  font-size:var(--fs-sm);
+  color:var(--text-1);
+  box-shadow:0 16px 40px rgba(0,0,0,.5);
+  opacity:0;
+  transform:translateY(8px);
+  pointer-events:none;
+  transition:opacity .25s var(--ease),transform .25s var(--ease);
+}
+.toast.on{opacity:1;transform:translateY(0)}
+
+@media (max-width:680px){
+  .topbar{padding:var(--sp-4) var(--sp-4) var(--sp-3)}
+  .progress{padding:var(--sp-2) var(--sp-4) var(--sp-3)}
+  .chat{padding:var(--sp-3) var(--sp-4) var(--sp-5)}
+  .composer{padding:var(--sp-2) var(--sp-4) var(--sp-4)}
+  .bubble{max-width:85%}
+  .brand .tag{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">◈</span>
+      <span class="name">苍穹<b>3</b>号</span>
+      <span class="tag">访谈 · 认识你</span>
+    </div>
+    <button class="exit-btn" id="btnPause" type="button">稍后继续</button>
+  </header>
+
+  <div class="progress" id="progress" aria-label="访谈进度"></div>
+
+  <main class="chat" id="messages" role="log" aria-live="polite" aria-label="对话记录"></main>
+
+  <footer class="composer">
+    <div class="hint-row">
+      <span>用你自己的话，说多少都可以</span>
+      <span><span class="kbd">Enter</span> 发送 · <span class="kbd">Shift+Enter</span> 换行</span>
+    </div>
+    <div class="input-shell">
+      <textarea id="input" rows="1" placeholder="在这里输入…" aria-label="输入你的回答"></textarea>
+      <button id="send" type="button" aria-label="发送">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+        </svg>
+      </button>
+    </div>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   0. API 与存储 key
+   ========================================================= */
+const API_BASE = (location.port === '5000' || !location.port)
+  ? '/api/interview'
+  : 'http://localhost:5000/api/interview';
+
+const STORE = {
+  session: 'cq3_interview_session',
+  entry: 'cq3_entry',
+  raw: 'cq3_raw_profile',
+  derived: 'cq3_derived_profile',
+  stage: 'cq3_stage'
+};
+
+/* =========================================================
+   1. 状态
+   ========================================================= */
+const state = {
+  sessionId: null,
+  progress: null,      // { total, done, dimensions: [{id, label, done}] }
+  locked: false,
+  finished: false,
+  finalized: null      // /finalize 结果 { raw, derived }
+};
+
+/* =========================================================
+   2. DOM
+   ========================================================= */
+const messagesEl = document.getElementById('messages');
+const inputEl    = document.getElementById('input');
+const sendBtn    = document.getElementById('send');
+const progressEl = document.getElementById('progress');
+const toastEl    = document.getElementById('toast');
+
+/* =========================================================
+   3. 工具
+   ========================================================= */
+let toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('on'), 2600);
+}
+
+function scrollBottom(){
+  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+}
+
+async function api(path, body, method){
+  const opts = {
+    method: method || (body ? 'POST' : 'GET'),
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API_BASE + path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+/* =========================================================
+   4. 进度条
+   ========================================================= */
+function renderProgress(progress){
+  if (!progress || !Array.isArray(progress.dimensions)) return;
+  const dims = progress.dimensions;
+
+  // 当前活跃维度：第一个 done=false 的
+  let activeIdx = -1;
+  for (let i = 0; i < dims.length; i++){
+    if (!dims[i].done){ activeIdx = i; break; }
+  }
+  // 全部完成时，active 落在最后一个
+  if (activeIdx === -1) activeIdx = dims.length - 1;
+
+  progressEl.innerHTML = '';
+  dims.forEach((d, i) => {
+    if (i > 0){
+      const sep = document.createElement('div');
+      sep.className = 'sep' + (d.done ? ' done' : '');
+      progressEl.appendChild(sep);
+    }
+    const m = document.createElement('div');
+    m.className = 'milestone';
+    if (d.done) m.classList.add('done');
+    else if (i === activeIdx) m.classList.add('active');
+    m.textContent = d.label;
+    progressEl.appendChild(m);
+  });
+
+  const active = progressEl.querySelector('.milestone.active');
+  if (active && progressEl.scrollWidth > progressEl.clientWidth){
+    active.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }
+}
+
+/* =========================================================
+   5. 消息
+   ========================================================= */
+function appendMessage(role, text, opts){
+  const o = opts || {};
+  const wrap = document.createElement('div');
+  wrap.className = 'msg msg-' + role;
+
+  if (role === 'system'){
+    wrap.innerHTML = '<div class="avatar">◈</div><div class="bubble"></div>';
+    wrap.querySelector('.bubble').textContent = text;
+  } else if (role === 'user'){
+    wrap.innerHTML = '<div class="bubble"></div>';
+    wrap.querySelector('.bubble').textContent = text;
+  } else if (role === 'event'){
+    wrap.innerHTML = '<div class="event"></div>';
+    wrap.querySelector('.event').textContent = text;
+  }
+
+  messagesEl.appendChild(wrap);
+  if (o.scroll !== false) scrollBottom();
+  return wrap;
+}
+
+function showTyping(){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg msg-system typing';
+  wrap.innerHTML = '<div class="avatar">◈</div><div class="bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+  messagesEl.appendChild(wrap);
+  scrollBottom();
+  return wrap;
+}
+
+function renderTranscript(transcript){
+  if (!Array.isArray(transcript)) return;
+  transcript.forEach(item => {
+    if (!item || !item.role) return;
+    if (item.role === 'system' || item.role === 'user'){
+      appendMessage(item.role, item.text || '', { scroll: false });
+    }
+  });
+  scrollBottom();
+}
+
+/* =========================================================
+   6. 输入框自适应
+   ========================================================= */
+function autoGrow(){
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+}
+inputEl.addEventListener('input', autoGrow);
+
+/* =========================================================
+   7. 输入框锁定
+   ========================================================= */
+function setLocked(locked){
+  state.locked = locked;
+  sendBtn.disabled = locked;
+  inputEl.disabled = locked;
+  if (!locked) inputEl.focus();
+}
+
+/* =========================================================
+   8. 启动：检查会话恢复，否则全新开始
+   ========================================================= */
+async function init(){
+  const savedSession = safeGet(STORE.session);
+
+  if (savedSession){
+    try {
+      const s = await api('/state?sessionId=' + encodeURIComponent(savedSession), null, 'GET');
+      state.sessionId = savedSession;
+      state.progress = s.progress;
+      // 渲染历史消息
+      appendMessage('event', '继续上次的访谈');
+      renderTranscript(s.transcript || []);
+      renderProgress(s.progress);
+      // 显示当前问题（如果历史里最后一条不是问题，就把 currentQuestion 补上）
+      if (s.currentQuestion){
+        const last = (s.transcript || [])[s.transcript.length - 1];
+        const alreadyShown = last && last.role === 'system' && last.text === s.currentQuestion;
+        if (!alreadyShown) appendMessage('system', s.currentQuestion);
+      }
+      if (s.progress && s.progress.done >= s.progress.total){
+        // 已经完成但没 finalize
+        onAllComplete();
+      } else {
+        setLocked(false);
+      }
+      return;
+    } catch (e){
+      // 会话失效，重新开始
+      safeRemove(STORE.session);
+    }
+  }
+
+  await startNew();
+}
+
+async function startNew(){
+  appendMessage('event', '访谈开始 · 大约 6 分钟');
+  setLocked(true);
+
+  const typing = showTyping();
+  try {
+    const entry = safeGet(STORE.entry) || 'interview';
+    const res = await api('/start', { entry });
+    typing.remove();
+
+    state.sessionId = res.sessionId;
+    safeSet(STORE.session, res.sessionId);
+    state.progress = res.progress;
+    renderProgress(res.progress);
+
+    if (res.type === 'all_complete'){
+      onAllComplete();
+      return;
+    }
+
+    appendMessage('system', res.question);
+    setLocked(false);
+  } catch (e){
+    typing.remove();
+    appendMessage('event', '启动失败：' + e.message);
+    toast('启动失败，请检查后端');
+  }
+}
+
+/* =========================================================
+   9. 发送
+   ========================================================= */
+async function send(){
+  const text = inputEl.value.trim();
+  if (!text || state.locked || state.finished) return;
+
+  inputEl.value = '';
+  autoGrow();
+  setLocked(true);
+  appendMessage('user', text);
+
+  const typing = showTyping();
+  try {
+    const res = await api('/answer', { sessionId: state.sessionId, text });
+    typing.remove();
+
+    if (res.type === 'follow_up' || res.type === 'next_field'){
+      appendMessage('system', res.question);
+      state.progress = res.progress;
+      renderProgress(res.progress);
+      setLocked(false);
+    } else if (res.type === 'all_complete'){
+      state.progress = res.progress;
+      renderProgress(res.progress);
+      onAllComplete();
+    } else if (res.error){
+      toast(res.error);
+      setLocked(false);
+    } else {
+      toast('未知响应');
+      setLocked(false);
+    }
+  } catch (e){
+    typing.remove();
+    toast('发送失败：' + e.message);
+    setLocked(false);
+  }
+}
+
+/* =========================================================
+   10. 全部完成：finalize + 完成卡片
+   ========================================================= */
+async function onAllComplete(){
+  state.finished = true;
+  appendMessage('event', '所有话题都聊完了');
+  setLocked(true);
+
+  const typing = showTyping();
+  try {
+    const res = await api('/finalize', { sessionId: state.sessionId });
+    typing.remove();
+    state.finalized = res;
+
+    const fields = (res.raw && res.raw.fields) || [];
+    const filled = fields.filter(f => f.status === 'filled').length;
+    const total = fields.length;
+    const blank = fields.filter(f => f.status === 'blank' || f.status === 'skipped').length;
+
+    showCompleteCard(filled, total, blank);
+  } catch (e){
+    typing.remove();
+    toast('生成结果失败：' + e.message);
+    showErrorCard(e.message);
+  }
+}
+
+function showCompleteCard(filled, total, blank){
+  const card = document.createElement('div');
+  card.className = 'complete-card';
+  const blankNote = blank > 0
+    ? `<br>另有 ${blank} 个话题这次没聊到具体内容，可以在复核页补上。`
+    : '';
+  card.innerHTML = `
+    <div class="complete-head">
+      <span class="complete-icon">✓</span>
+      <span>访谈完成</span>
+    </div>
+    <p>你分享了 ${filled} 条结构化内容（共 ${total} 个话题）。系统会把它们整理成你的原始画像和结构化数据，接下来可以在复核页逐条修改。${blankNote}</p>
+    <button class="btn-primary" id="btnSave" type="button">确认并保存</button>
+  `;
+  messagesEl.appendChild(card);
+  scrollBottom();
+  document.getElementById('btnSave').addEventListener('click', save);
+}
+
+function showErrorCard(msg){
+  const card = document.createElement('div');
+  card.className = 'complete-card';
+  card.innerHTML = `
+    <div class="complete-head">
+      <span class="complete-icon" style="color:#ff8a80;border-color:rgba(255,138,128,.4)">!</span>
+      <span>生成结果时出错了</span>
+    </div>
+    <p>${escapeHtml(msg || '未知错误')}</p>
+    <button class="btn-primary" id="btnRetry" type="button">重试</button>
+  `;
+  messagesEl.appendChild(card);
+  scrollBottom();
+  document.getElementById('btnRetry').addEventListener('click', () => {
+    card.remove();
+    onAllComplete();
+  });
+}
+
+/* =========================================================
+   11. 保存
+   ========================================================= */
+function save(){
+  if (!state.finalized) return;
+  try {
+    localStorage.setItem(STORE.raw, JSON.stringify(state.finalized.raw));
+    localStorage.setItem(STORE.derived, JSON.stringify(state.finalized.derived));
+    localStorage.setItem(STORE.stage, 'review_pending');
+    localStorage.removeItem(STORE.session);
+  } catch (e){
+    toast('本地存储失败，可能是隐私模式限制');
+    return;
+  }
+
+  const btn = document.getElementById('btnSave');
+  if (btn){
+    btn.disabled = true;
+    btn.textContent = '已保存';
+  }
+  toast('正在进入复核页…');
+
+  // 跳到 edit.html（复核模式）
+  setTimeout(() => { location.href = 'edit.html?mode=review'; }, 600);
+}
+
+/* =========================================================
+   12. 稍后继续
+   ========================================================= */
+function pause(){
+  if (state.sessionId){
+    safeSet(STORE.session, state.sessionId);
+    toast('进度已暂存。回来时重新打开这个页面即可继续。');
+  } else {
+    toast('还没有开始访谈');
+  }
+}
+
+/* =========================================================
+   13. localStorage 安全读写
+   ========================================================= */
+function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function safeSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+function safeRemove(k){ try { localStorage.removeItem(k); } catch(e){} }
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* =========================================================
+   14. 事件
+   ========================================================= */
+sendBtn.addEventListener('click', send);
+
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+});
+
+document.getElementById('btnPause').addEventListener('click', pause);
+
+// 关闭前自动保存 session，方便恢复
+window.addEventListener('beforeunload', () => {
+  if (state.sessionId && !state.finished) safeSet(STORE.session, state.sessionId);
+});
+
+/* =========================================================
+   15. 启动
+   ========================================================= */
+init();
+
+})();
+</script>
+</body>
+</html>
