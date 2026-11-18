@@ -1,308 +1,453 @@
-#记忆管理（心智内容的同步与保存）
-import pandas as pd
+#记忆管理（记忆包的扫描、导入、导出；本模块不弹任何命令行输入，交互全部交给界面）
+import os
+import re
 
 import 公共状态
 
 
-#同步（从文件加载心智内容）
-def 同步记忆():
-    #同步情绪习惯
-    print("同步情绪习惯列表--------------")
-    公共状态.haphablist=[]
-    hapbbh=input("输入要同步的喜习惯列表的版本号：")
-    hapwjlj="意识数据/情绪习惯列表/喜习惯列表/喜习惯列表"+hapbbh+".txt"#喜习惯列表文件路径
+数据根目录 = "意识数据"
 
-    with open(hapwjlj,'r',encoding='utf-8') as hapfile:
-        hang=hapfile.readline().strip()
-        while hang:
+#9 类意识数据的规格
+#  键：内部标识
+#  名称：界面显示名
+#  目录：意识数据下的子目录
+#  前缀/后缀：文件名 = 前缀 + 包名 + 后缀
+#  变量：对应 公共状态 里的变量（ART 单独处理）
+类型规格 = [
+    {"键": "喜",       "名称": "喜习惯列表",     "目录": os.path.join("情绪习惯列表", "喜习惯列表"), "前缀": "喜习惯列表",     "后缀": ".txt", "变量": "haphablist"},
+    {"键": "哀",       "名称": "哀习惯列表",     "目录": os.path.join("情绪习惯列表", "哀习惯列表"), "前缀": "哀习惯列表",     "后缀": ".txt", "变量": "sadhablist"},
+    {"键": "行为空间", "名称": "行为空间",       "目录": "行为空间",         "前缀": "行为空间",       "后缀": ".txt", "变量": "allact"},
+    {"键": "行为习惯", "名称": "行为习惯列表",   "目录": "行为习惯列表",     "前缀": "行为习惯列表",   "后缀": ".txt", "变量": "acthablist"},
+    {"键": "自传体",   "名称": "自传体记忆",     "目录": "自传体记忆",       "前缀": "自传体记忆",     "后缀": ".txt", "变量": "memorylist"},
+    {"键": "状态转移", "名称": "状态转移概率矩阵","目录": "状态转移概率矩阵", "前缀": "状态转移概率矩阵","后缀": ".txt", "变量": "transmatrix"},
+    {"键": "词典",     "名称": "词典",           "目录": "词典",             "前缀": "词典",           "后缀": ".txt", "变量": "dictionary"},
+    {"键": "词转移",   "名称": "词转移概率矩阵", "目录": "词转移概率矩阵",   "前缀": "词转移概率矩阵", "后缀": ".txt", "变量": "word_trans_matrix"},
+    {"键": "ART",      "名称": "ART原型",        "目录": "ART",              "前缀": "ART",            "后缀": ".csv", "变量": None},
+]
 
-            senlisthap1=hang.split("；")#引发喜的知觉概念列表（senlist）和该列表引发的喜的水平（hap）之间用“；”连接
-            senlist=senlisthap1[0].split("。")#引发喜的知觉概念列表内部的概念用“。”连接
-            hap=int(senlisthap1[1])
-            #删除切片出的空内容
-            while "" in senlist:
-                senlist.remove("")
+# ---------------- 包名 ----------------
 
-            公共状态.haphablist.append([senlist,hap])
-            hang=hapfile.readline().strip()
-
-    公共状态.sadhablist=[]
-    sadbbh=input("输入要同步的哀习惯列表的版本号：")
-    sadwjlj="意识数据/情绪习惯列表/哀习惯列表/哀习惯列表"+sadbbh+".txt"#哀习惯列表文件路径
-
-    with open(sadwjlj,'r',encoding='utf-8') as sadfile:
-        hang=sadfile.readline().strip()
-        while hang:
-
-            senlistsad1=hang.split("；")#引发哀的知觉概念列表（senlist）和该列表引发的哀的水平（sad）之间用“；”连接
-            senlist=senlistsad1[0].split("。")#引发哀的知觉概念列表内部的概念用“。”连接
-            sad=int(senlistsad1[1])
-            #删除切片出的空内容
-            while "" in senlist:
-                senlist.remove("")
-
-            公共状态.sadhablist.append([senlist,sad])
-            hang=sadfile.readline().strip()
-
-    print("情绪习惯列表：")
-    print("（结构：[[senlist1，hap1/sad1],[senlist2，hap2/sad2],...]）")
-    print("喜习惯列表：",公共状态.haphablist)
-    print("哀习惯列表：",公共状态.sadhablist)
-
-    #同步行为空间（这是一个列表）
-    print("同步行为空间---------------")
-    公共状态.allact=[]
-    allactbbh=input("输入要同步的行为空间的版本号：")
-    allactwjlj="意识数据/行为空间/行为空间"+allactbbh+".txt"
+非法字符 = set('\\/:*?"<>|')
 
 
-    with open(allactwjlj,"r",encoding='utf-8') as allactfile:
-        acts=allactfile.readline().strip()
-        while acts:
-            公共状态.allact.append(acts)
-            acts=allactfile.readline().strip()
-    print("行为空间：",公共状态.allact)
-
-    #同步行为习惯列表acthablist
-    print("同步行为习惯列表acthablist----------------")
-    公共状态.acthablist=[]
-    acthabbbh=input("输入要同步的行为习惯列表的版本号：")
-    acthabwjlj="意识数据/行为习惯列表/行为习惯列表"+acthabbbh+".txt"
-
-    with open(acthabwjlj,"r",encoding='utf-8') as acthabfile:
-        hang=acthabfile.readline().strip()
-        while hang:
-
-            psav1=hang.split("；")#ps、a、v之间用“；”连接
-            psav_p=psav1[0].split("。")#ps内部用“。”连接
-            psav_a=psav1[1].split("。")#a内部用“。”连接
-            v=int(psav1[2])
-            #删除切片出的空内容
-            while "" in psav_p:
-                psav_p.remove("")
-            while "" in psav_a:
-                psav_a.remove("")
-            公共状态.acthablist.append([psav_p,psav_a,v])
-            hang=acthabfile.readline().strip()
-    print("行为习惯列表acthablist:",公共状态.acthablist)
-
-    #同步自传体记忆
-    print("同步自传体记忆----------------")
-    公共状态.memorylist=[]
-    memorylistbbh=input("输入要同步的自传体记忆的版本号：")
-    memorylistwjlj="意识数据/自传体记忆/自传体记忆"+memorylistbbh+".txt"#自传体记忆文件路径
-
-    with open(memorylistwjlj,'r',encoding='utf-8') as memorylistfile:
-        hang=memorylistfile.readline().strip()
-        while hang:
-
-            senlist_actlist_vsum=hang.split("；")#senlist、actlist、vsum之间用“；”连接
-            senlist=senlist_actlist_vsum[0].split("。")#senlist内部的概念用“。”连接
-            actlist=senlist_actlist_vsum[1].split("。")#actlist内部的概念用“。”连接
-            vsum=int(senlist_actlist_vsum[2])
-            #删除切片出的空内容
-            while "" in senlist:
-                senlist.remove("")
-            while "" in actlist:
-                actlist.remove("")
-
-            公共状态.memorylist.append([senlist,actlist,vsum])
-            hang=memorylistfile.readline().strip()
-
-    print("自传体记忆：",公共状态.memorylist)
-
-    #同步状态转移概率矩阵
-    print("同步状态转移概率矩阵----------------")
-    公共状态.transmatrix=[]
-    transmatrixbbh=input("输入要同步的状态转移概率矩阵的版本号：")
-    transmatrixwjlj="意识数据/状态转移概率矩阵/状态转移概率矩阵"+transmatrixbbh+".txt"
-    with open(transmatrixwjlj,'r',encoding='utf-8') as transmatrixfile:
-        hang=transmatrixfile.readline().strip()
-        while hang:
-            translist=[]
-            startstate=hang.split("；")[0].split("。")
-            while "" in startstate:
-                startstate.remove("")
-            translist.append(startstate)
-
-            for i in hang.split("；")[1:]:
-                endstateseq=i.split("、")
-                while "" in endstateseq:
-                    endstateseq.remove("")
-                endstate=endstateseq[0].split("。")
-                while "" in endstate:
-                    endstate.remove("")
-                chance=float(endstateseq[1])
-                times=int(endstateseq[2])
-
-                translist.append([endstate,chance,times])
-
-            公共状态.transmatrix.append(translist)
-
-            hang=transmatrixfile.readline().strip()
-
-    print("状态转移概率矩阵：",公共状态.transmatrix)
-
-    #同步词典
-    print("同步词典----------------")
-    公共状态.dictionary=[]
-    dictionarybbh=input("输入要同步的词典的版本号：")
-    dictionarywjlj="意识数据/词典/词典"+dictionarybbh+".txt"#词典文件路径
-
-    with open(dictionarywjlj,'r',encoding='utf-8') as dictionaryfile:
-        hang=dictionaryfile.readline().strip()
-        while hang:
-
-            word_sen_weight=hang.split("；")#word、sen、weight之间用“；”连接
-            word=word_sen_weight[0]
-            sen=word_sen_weight[1]
-            weight=float(word_sen_weight[2])
-            公共状态.dictionary.append([word,sen,weight])
-            hang=dictionaryfile.readline().strip()
-
-    print("词典：",公共状态.dictionary)
-
-    #同步词转移概率矩阵
-    print("同步词转移概率矩阵----------------")
-    公共状态.word_trans_matrix=[]
-    word_trans_matrixbbh=input("输入要同步的词转移概率矩阵的版本号：")
-    word_trans_matrixwjlj="意识数据/词转移概率矩阵/词转移概率矩阵"+word_trans_matrixbbh+".txt"#词转移概率矩阵文件路径
-    with open(word_trans_matrixwjlj,'r',encoding='utf-8') as word_trans_matrixfile:
-        hang=word_trans_matrixfile.readline().strip()
-        while hang:
-            word1_word2_weight12=hang.split("；")#word1、word2、weight12之间用“；”连接
-            word1=word1_word2_weight12[0]
-            word2=word1_word2_weight12[1]
-            weight12=float(word1_word2_weight12[2])
-            公共状态.word_trans_matrix.append([word1,word2,weight12])
-            hang=word_trans_matrixfile.readline().strip()
-    print("词转移概率矩阵：",公共状态.word_trans_matrix)
+def 规范化包名(名字, 版本号):
+    """名字（字符）+ 版本号（数字）→ 包名；不合法时返回 (None, 原因)"""
+    名字 = (名字 or "").strip()
+    if not 名字:
+        名字 = "空白研究者"
+    for 字符 in 名字:
+        if 字符 in 非法字符:
+            return None, "名字中不能包含 \\ / : * ? \" < > | 等字符"
+    版本号 = (版本号 or "").strip()
+    if not 版本号:
+        return None, "请填写版本号"
+    if not (版本号.isascii() and 版本号.isdigit()):
+        return None, "版本号必须是数字"
+    return 名字 + 版本号, ""
 
 
-
-#保存记忆
-def 保存记忆():
-    if 公共状态.varcbbaocun1.get()==1 and 公共状态.varcbbaocun2.get()==1:
-        #保存情绪习惯列表
-        #保存喜习惯列表
-        hapbbh=input("输入要保存的喜习惯列表的版本号：")
-        hapwjlj="意识数据/情绪习惯列表/喜习惯列表/喜习惯列表"+hapbbh+".txt"#喜习惯列表文件路径
-        content=''
-        for senlist_hap in 公共状态.haphablist:
-            cont_senlist=''
-            for i in senlist_hap[0]:
-                cont_senlist+=str(i)+"。"
-
-            hap=senlist_hap[1]
-
-            line=cont_senlist+"；"+str(hap)
-            content+=str(line)+"\n"
-        with open(hapwjlj,"w",encoding='utf-8') as hapfile:
-            hapfile.write(content)
+def 拆分包名(包名):
+    """包名 → (名字, 版本号)；不符合“名字+数字”时版本号为空"""
+    匹配 = re.match(r"^(.*?)(\d+)$", 包名 or "")
+    if not 匹配:
+        return (包名 or ""), ""
+    return 匹配.group(1), 匹配.group(2)
 
 
-        #保存哀习惯列表
-        sadbbh=input("输入要保存的哀习惯列表的版本号：")
-        sadwjlj="意识数据/情绪习惯列表/哀习惯列表/哀习惯列表"+sadbbh+".txt"#哀习惯列表文件路径
-        content=''
-        for senlist_sad in 公共状态.sadhablist:
-            cont_senlist=''
-            for i in senlist_sad[0]:
-                cont_senlist+=str(i)+"。"
-
-            sad=senlist_sad[1]
-
-            line=cont_senlist+"；"+str(sad)
-            content+=str(line)+"\n"
-        with open(sadwjlj,"w",encoding='utf-8') as sadfile:
-            sadfile.write(content)
-
-        #保存行为习惯列表
-        acthabbbh=input("输入要保存的行为习惯列表的版本号：")
-        acthabwjlj="意识数据/行为习惯列表/行为习惯列表"+acthabbbh+".txt"
-        content=''
-
-        cont_ps=''
-        cont_a=''
-
-        for psav in 公共状态.acthablist:
-            cont_ps=''
-            cont_a=''
-            for i in psav[0]:
-                cont_ps+=str(i)+"。"
-            for i in psav[1]:
-                cont_a+=str(i)+"。"
-            v=psav[2]
-
-            line=cont_ps+"；"+cont_a+"；"+str(v)
-            content+=str(line)+"\n"
-        with open(acthabwjlj,"w",encoding='utf-8') as acthabfile:
-            acthabfile.write(content)
-
-        #保存自传体记忆
-        memorybbh=input("输入要保存的自传体记忆的版本号：")
-        memorywjlj="意识数据/自传体记忆/自传体记忆"+memorybbh+".txt"
-        content=''
-        for senlist_actlist_vsum in 公共状态.memorylist:
-            senlist=senlist_actlist_vsum[0]
-            actlist=senlist_actlist_vsum[1]
-            vsum=senlist_actlist_vsum[2]
-            cont_senlist=''
-            cont_actlist=''
-            for i in senlist:
-                cont_senlist+=str(i)+"。"
-            for i in actlist:
-                cont_actlist+=str(i)+"。"
-            line=cont_senlist+"；"+cont_actlist+"；"+str(vsum)
-            content+=str(line)+"\n"
-        with open(memorywjlj,"w",encoding='utf-8') as memoryfile:
-            memoryfile.write(content)
-
-        #保存状态转移概率矩阵
-        transbbh=input("输入要保存的状态转移概率矩阵的版本号：")
-        transwjlj="意识数据/状态转移概率矩阵/状态转移概率矩阵"+transbbh+".txt"
-        content=''
-        for translist in 公共状态.transmatrix:
-            cont_translist=''
-            cont_translist+='。'.join(translist[0])
-            for i in translist[1:]:
-                cont_translist+='；'+'。'.join(i[0])+"、"+str(i[1])+"、"+str(i[2])
-
-            line=cont_translist
-            content+=str(line)+"\n"
-
-        with open(transwjlj,"w",encoding='utf-8') as transfile:
-            transfile.write(content)
+def 建议版本号(名字):
+    """同一名字下已有最大版本号 + 1"""
+    名字 = (名字 or "").strip() or "空白研究者"
+    最大 = 0
+    模式 = re.compile("^" + re.escape(名字) + r"(\d+)$")
+    for 包名 in 列出记忆包():
+        匹配 = 模式.match(包名)
+        if 匹配:
+            最大 = max(最大, int(匹配.group(1)))
+    return str(最大 + 1)
 
 
-        #保存词典
-        dictionarybbh=input("输入要保存的词典的版本号：")
-        dictionarywjlj="意识数据/词典/词典"+dictionarybbh+".txt"
-        content=''
-        for i in 公共状态.dictionary:
-            line=i[0]+"；"+i[1]+"；"+str(i[2])
-            content+=str(line)+"\n"
-        with open(dictionarywjlj,"w",encoding='utf-8') as dictionaryfile:
-            dictionaryfile.write(content)
+# ---------------- 路径与统计 ----------------
 
-        #保存词转移概率矩阵
-        word_trans_matrixbbh=input("输入要保存的词转移概率矩阵的版本号：")
-        word_trans_matrixwjlj="意识数据/词转移概率矩阵/词转移概率矩阵"+word_trans_matrixbbh+".txt"
-        content=''
-        for i in 公共状态.word_trans_matrix:
-            line=i[0]+"；"+i[1]+"；"+str(i[2])
-            content+=str(line)+"\n"
-        with open(word_trans_matrixwjlj,"w",encoding='utf-8') as word_trans_matrixfile:
-            word_trans_matrixfile.write(content)
-
-        #保存ART
-        artbbh=input("输入要保存的ART模型的版本号：")
-        artwjlj="意识数据/ART/ART"+artbbh+".csv"
-        df = pd.DataFrame(公共状态.art_model.prototypes)# 将prototypes转换为DataFrame
-        # 保存为CSV文件，不包含标题行，每行之间没有空行
-        df.to_csv(artwjlj, index=False, header=False)
+def 默认路径(规格, 包名):
+    return os.path.join(数据根目录, 规格["目录"], 规格["前缀"] + 包名 + 规格["后缀"])
 
 
-        print("保存成功——————————————")
-        公共状态.varcbbaocun1.set(0)
-        公共状态.varcbbaocun2.set(0)
+def _读行(路径):
+    with open(路径, "r", encoding="utf-8-sig") as 文件:
+        return [行.strip() for 行 in 文件]
+
+
+def _非空行数(路径):
+    return sum(1 for 行 in _读行(路径) if 行)
+
+
+def _ART形状(路径):
+    with open(路径, "r", encoding="utf-8-sig") as 文件:
+        行列表 = [行 for 行 in 文件 if 行.strip()]
+    if not 行列表:
+        return 0, 0
+    列数 = len([字段 for 字段 in 行列表[0].strip().split(",") if 字段.strip()])
+    return len(行列表), 列数
+
+
+def 条数(路径, 键):
+    """文件不存在返回 None；ART 返回“行×列”；其余返回非空行数"""
+    if not os.path.exists(路径):
+        return None
+    if 键 == "ART":
+        行数, 列数 = _ART形状(路径)
+        return "%d×%d" % (行数, 列数)
+    return _非空行数(路径)
+
+
+def 列出记忆包():
+    """扫描 意识数据，返回 {包名: {"路径": {键: 路径}, "时间": 最后修改时间}}"""
+    结果 = {}
+    for 规格 in 类型规格:
+        目录 = os.path.join(数据根目录, 规格["目录"])
+        if not os.path.isdir(目录):
+            continue
+        for 文件名 in os.listdir(目录):
+            if not (文件名.startswith(规格["前缀"]) and 文件名.endswith(规格["后缀"])):
+                continue
+            包名 = 文件名[len(规格["前缀"]):len(文件名) - len(规格["后缀"])]
+            if not 包名:
+                continue
+            路径 = os.path.join(目录, 文件名)
+            条目 = 结果.setdefault(包名, {"路径": {}, "时间": 0.0})
+            条目["路径"][规格["键"]] = 路径
+            try:
+                条目["时间"] = max(条目["时间"], os.path.getmtime(路径))
+            except OSError:
+                pass
+    return 结果
+
+
+def 包内文件(包名, 覆盖路径=None):
+    """导入用：逐类列出路径、是否存在、文件里的条数"""
+    覆盖路径 = 覆盖路径 or {}
+    结果 = []
+    for 规格 in 类型规格:
+        路径 = 覆盖路径.get(规格["键"]) or 默认路径(规格, 包名)
+        存在 = os.path.exists(路径)
+        结果.append({
+            "键": 规格["键"],
+            "名称": 规格["名称"],
+            "路径": 路径,
+            "存在": 存在,
+            "条数": 条数(路径, 规格["键"]) if 存在 else None,
+        })
+    return 结果
+
+
+def 导出预览(包名, 覆盖路径=None):
+    """导出用：逐类列出目标路径、内存里条数、将新建还是覆盖"""
+    覆盖路径 = 覆盖路径 or {}
+    结果 = []
+    for 规格 in 类型规格:
+        键 = 规格["键"]
+        路径 = 覆盖路径.get(键) or 默认路径(规格, 包名)
+        存在 = os.path.exists(路径)
+        if 键 == "ART":
+            if 公共状态.art_model is None:
+                内存条数, 状态 = "—", "跳过（模型未加载）"
+            else:
+                原型 = 公共状态.art_model.prototypes
+                内存条数, 状态 = "%d×%d" % (len(原型), len(原型[0]) if len(原型) else 0), ("覆盖" if 存在 else "新建")
+        else:
+            内存条数 = len(getattr(公共状态, 规格["变量"], []) or [])
+            状态 = "覆盖" if 存在 else "新建"
+        结果.append({
+            "键": 键,
+            "名称": 规格["名称"],
+            "路径": 路径,
+            "存在": 存在,
+            "条数": 内存条数,
+            "状态": 状态,
+        })
+    return 结果
+
+
+# ---------------- 解析 ----------------
+
+def _概念列表(字段):
+    return [片段 for 片段 in 字段.split("。") if 片段]
+
+
+def _数字(字段):
+    try:
+        return float(字段)
+    except (TypeError, ValueError):
+        return None
+
+
+def _整数(字段):
+    数值 = _数字(字段)
+    if 数值 is None or 数值 != int(数值):
+        return None
+    return int(数值)
+
+
+def _解析_情绪(路径):
+    列表, 坏行 = [], []
+    for 行号, 行 in enumerate(_读行(路径), 1):
+        if not 行:
+            continue
+        段 = 行.split("；")
+        if len(段) != 2:
+            坏行.append((行号, 行, "应为 2 段，实际 %d 段" % len(段)))
+            continue
+        强度 = _数字(段[1])
+        if 强度 is None:
+            坏行.append((行号, 行, "情绪强度不是数字"))
+            continue
+        列表.append([_概念列表(段[0]), int(强度) if 强度 == int(强度) else 强度])
+    return 列表, 坏行
+
+
+def _解析_行为空间(路径):
+    return [行 for 行 in _读行(路径) if 行], []
+
+
+def _解析_三列(路径):
+    """行为习惯、自传体记忆：概念；概念；数值"""
+    列表, 坏行 = [], []
+    for 行号, 行 in enumerate(_读行(路径), 1):
+        if not 行:
+            continue
+        段 = 行.split("；")
+        if len(段) != 3:
+            坏行.append((行号, 行, "应为 3 段，实际 %d 段" % len(段)))
+            continue
+        数值 = _数字(段[2])
+        if 数值 is None:
+            坏行.append((行号, 行, "价值不是数字"))
+            continue
+        列表.append([_概念列表(段[0]), _概念列表(段[1]), 数值])
+    return 列表, 坏行
+
+
+def _解析_状态转移(路径):
+    列表, 坏行 = [], []
+    for 行号, 行 in enumerate(_读行(路径), 1):
+        if not 行:
+            continue
+        段 = 行.split("；")
+        转移 = [_概念列表(段[0])]
+        错误 = None
+        for 后继字段 in 段[1:]:
+            子段 = 后继字段.split("、")
+            if len(子段) != 3:
+                错误 = "转移应为 3 段，实际 %d 段" % len(子段)
+                break
+            概率 = _数字(子段[1])
+            次数 = _整数(子段[2])
+            if 概率 is None or 次数 is None:
+                错误 = "转移的概率或次数不是数字"
+                break
+            转移.append([_概念列表(子段[0]), 概率, 次数])
+        if 错误:
+            坏行.append((行号, 行, 错误))
+            continue
+        列表.append(转移)
+    return 列表, 坏行
+
+
+def _解析_词典(路径):
+    列表, 坏行 = [], []
+    for 行号, 行 in enumerate(_读行(路径), 1):
+        if not 行:
+            continue
+        段 = 行.split("；")
+        if len(段) != 3:
+            坏行.append((行号, 行, "应为 3 段，实际 %d 段" % len(段)))
+            continue
+        权重 = _数字(段[2])
+        if 权重 is None:
+            坏行.append((行号, 行, "权重不是数字"))
+            continue
+        列表.append([段[0], 段[1], 权重])
+    return 列表, 坏行
+
+
+解析器 = {
+    "喜": _解析_情绪,
+    "哀": _解析_情绪,
+    "行为空间": _解析_行为空间,
+    "行为习惯": _解析_三列,
+    "自传体": _解析_三列,
+    "状态转移": _解析_状态转移,
+    "词典": _解析_词典,
+    "词转移": _解析_词典,
+}
+
+
+# ---------------- 序列化 ----------------
+
+def _数转文本(数值):
+    if isinstance(数值, bool):
+        return str(int(数值))
+    if isinstance(数值, int):
+        return str(数值)
+    数值 = float(数值)
+    if 数值 == int(数值):
+        return str(int(数值))
+    return repr(数值)#最短且能精确回读的写法
+
+
+def _概念字段(概念):
+    return "".join(str(单个) + "。" for 单个 in 概念)
+
+
+def _序列化_情绪(列表):
+    return "".join(_概念字段(概念) + "；" + _数转文本(值) + "\n" for 概念, 值 in 列表)
+
+
+def _序列化_行为空间(列表):
+    return "".join(str(行为) + "\n" for 行为 in 列表)
+
+
+def _序列化_三列(列表):
+    return "".join(_概念字段(前) + "；" + _概念字段(后) + "；" + _数转文本(值) + "\n"
+                   for 前, 后, 值 in 列表)
+
+
+def _序列化_状态转移(列表):
+    输出 = ""
+    for 转移 in 列表:
+        行 = _概念字段(转移[0])
+        for 后继 in 转移[1:]:
+            行 += "；" + _概念字段(后继[0]) + "、" + _数转文本(后继[1]) + "、" + _数转文本(后继[2])
+        输出 += 行 + "\n"
+    return 输出
+
+
+def _序列化_词典(列表):
+    return "".join(str(词) + "；" + str(义) + "；" + _数转文本(权重) + "\n"
+                   for 词, 义, 权重 in 列表)
+
+
+def _序列化_ART(原型):
+    行文本 = []
+    for 行 in 原型:
+        行文本.append(",".join("%.10g" % float(数值) for 数值 in 行))
+    if not 行文本:
+        return ""
+    return "\n".join(行文本) + "\n"
+
+
+序列化器 = {
+    "喜": _序列化_情绪,
+    "哀": _序列化_情绪,
+    "行为空间": _序列化_行为空间,
+    "行为习惯": _序列化_三列,
+    "自传体": _序列化_三列,
+    "状态转移": _序列化_状态转移,
+    "词典": _序列化_词典,
+    "词转移": _序列化_词典,
+}
+
+
+# ---------------- 导入 / 导出 ----------------
+
+def 导入记忆包(包名, 覆盖路径=None, 跳过坏行=False, 提交=True):
+    """读取一个记忆包。
+    提交=True 且没有任何坏行时，才写入 公共状态（保证不会导入半个包）。
+    返回 (成功, 报告, 错误列表)"""
+    覆盖路径 = 覆盖路径 or {}
+    暂存 = {}
+    报告 = []
+    错误 = []
+
+    for 规格 in 类型规格:
+        键 = 规格["键"]
+        if 键 == "ART":
+            continue
+        路径 = 覆盖路径.get(键) or 默认路径(规格, 包名)
+        if not os.path.exists(路径):
+            暂存[规格["变量"]] = []
+            报告.append({"键": 键, "名称": 规格["名称"], "路径": 路径,
+                         "状态": "缺失（按空表导入）", "条数": 0, "坏行": []})
+            continue
+        列表, 坏行 = 解析器[键](路径)
+        if 坏行 and not 跳过坏行:
+            错误.append({"键": 键, "名称": 规格["名称"], "路径": 路径, "坏行": 坏行})
+        暂存[规格["变量"]] = 列表
+        报告.append({
+            "键": 键,
+            "名称": 规格["名称"],
+            "路径": 路径,
+            "状态": "已读取" if not 坏行 else "含坏行（已跳过 %d 行）" % len(坏行),
+            "条数": len(列表),
+            "坏行": 坏行,
+        })
+
+    if 错误:
+        return False, 报告, 错误
+    if not 提交:
+        return True, 报告, []
+
+    for 变量, 列表 in 暂存.items():
+        setattr(公共状态, 变量, 列表)
+
+    公共状态.当前记忆包 = 包名
+    #ART 由 知觉分类模块 按这个路径加载
+    公共状态.art原型路径 = 覆盖路径.get("ART") or 默认路径(
+        [规格 for 规格 in 类型规格 if 规格["键"] == "ART"][0], 包名)
+    return True, 报告, []
+
+
+def 导出记忆包(包名, 覆盖路径=None):
+    """把内存里的 9 类数据写成一个记忆包（两阶段写出，避免半个包）。
+    返回 (成功, 报告, 错误信息)"""
+    覆盖路径 = 覆盖路径 or {}
+    待写 = []
+    报告 = []
+
+    for 规格 in 类型规格:
+        键 = 规格["键"]
+        路径 = 覆盖路径.get(键) or 默认路径(规格, 包名)
+        if 键 == "ART":
+            if 公共状态.art_model is None:
+                报告.append({"键": 键, "名称": 规格["名称"], "路径": 路径,
+                             "状态": "跳过（模型未加载）", "条数": "—"})
+                continue
+            内容 = _序列化_ART(公共状态.art_model.prototypes)
+            if not 内容:
+                报告.append({"键": 键, "名称": 规格["名称"], "路径": 路径,
+                             "状态": "跳过（无原型）", "条数": "—"})
+                continue
+        else:
+            内容 = 序列化器[键](getattr(公共状态, 规格["变量"], []) or [])
+        待写.append((路径, 内容, 键, 规格["名称"]))
+        报告.append({
+            "键": 键,
+            "名称": 规格["名称"],
+            "路径": 路径,
+            "状态": "覆盖" if os.path.exists(路径) else "新建",
+            "条数": 内容.count("\n"),
+        })
+
+    临时文件 = []
+    try:
+        for 路径, 内容, 键, 名称 in 待写:
+            目录 = os.path.dirname(路径)
+            if 目录:
+                os.makedirs(目录, exist_ok=True)
+            临时 = 路径 + ".tmp"
+            with open(临时, "w", encoding="utf-8", newline="") as 文件:
+                文件.write(内容)
+            临时文件.append((临时, 路径))
+    except Exception as 异常:
+        for 临时, 路径 in 临时文件:
+            try:
+                os.remove(临时)
+            except OSError:
+                pass
+        return False, 报告, str(异常)
+
+    for 临时, 路径 in 临时文件:
+        os.replace(临时, 路径)
+
+    公共状态.当前记忆包 = 包名
+    return True, 报告, ""
